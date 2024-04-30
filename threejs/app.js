@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0xffffff, 1); // Set background color to white
     document.body.appendChild(renderer.domElement);
-    camera.position.z = 20;
+    camera.position.z = 5;
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
