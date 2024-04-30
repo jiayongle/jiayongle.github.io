@@ -5,20 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0xffffff, 1); // Set background color to white
     document.body.appendChild(renderer.domElement);
-    camera.position.z = 5;
+    camera.position.z = 20;
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.1;
     controls.enableZoom = true;
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // soft white light
-    scene.add(ambientLight);
-
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(1, 1, 1); // Positioned to be shining from the top right
-    scene.add(directionalLight);
 
     const radius = 0.25; // Radius of the spheres
     const nodes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
@@ -27,9 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
         [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]      // Top layer E, F, G, H
     ];
 
+    const textureLoader = new THREE.TextureLoader();
+    const texture = textureLoader.load('https://threejsfundamentals.org/threejs/resources/images/wall.jpg'); // Example texture
+
     nodes.forEach((node, index) => {
         const geometry = new THREE.SphereGeometry(radius, 32, 32);
-        const material = new THREE.MeshPhongMaterial({ color: Math.random() * 0xffffff }); // Phong material for shiny surfaces
+        // Uncomment one of the following material lines to see different effects:
+
+        // Solid color with wireframe
+        // const material = new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff, wireframe: true });
+
+        // Texture mapping
+        const material = new THREE.MeshBasicMaterial({ map: texture });
+
         const sphere = new THREE.Mesh(geometry, material);
         sphere.position.set(...positions[index]);
         scene.add(sphere);
@@ -56,11 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function animate() {
         requestAnimationFrame(animate);
-        scene.rotation.y += 0.01; // Rotate the scene around the y-axis
         controls.update();
         renderer.render(scene, camera);
     }
 
     animate();
 });
-
