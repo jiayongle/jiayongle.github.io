@@ -56,9 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function animate() {
         requestAnimationFrame(animate);
+        scene.rotation.y += 0.01; // Rotate the scene around the y-axis
         controls.update();
         renderer.render(scene, camera);
     }
 
     animate();
 });
+
