@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial: Using XProf OSS for GPU Profiling</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        code {
+            background-color: #eee;
+            padding: 2px 4px;
+            font-family: "Courier New", Courier, monospace;
+        }
+        pre {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tutorial: Using XProf OSS for GPU Profiling</h1>
+
+    <p>This tutorial will guide you through the process of using XProf OSS, a profiling tool based on TensorBoard, to profile and inspect machine learning workloads on a GPU.</p>
+
+    <h2>Step 1: Set Up Your Environment</h2>
+    <p>Before starting with XProf OSS, ensure that your environment is ready by following these steps:</p>
+
+    <h3>Check GPU Availability:</h3>
+    <p>Use <code>nvidia-smi</code> to confirm that your system has a GPU available and properly set up.</p>
+    <pre><code>nvidia-smi</code></pre>
+
+    <h3>Create a Python Virtual Environment:</h3>
+    <p>It's a good practice to use a virtual environment to avoid conflicts between dependencies.</p>
+    <pre><code>python3 -m venv jaxvenv
+source jaxvenv/bin/activate</code></pre>
+
+    <h3>Install Required Packages:</h3>
+    <p>Install TensorFlow (for TensorBoard) and JAX, ensuring that JAX is set up with GPU support.</p>
+    <pre><code>pip install tf-nightly tbp-nightly
+pip install --upgrade "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html</code></pre>
+
+    <h3>Verify JAX GPU Backend:</h3>
+    <p>After installation, verify that JAX is configured to use the GPU backend.</p>
+    <pre><code>python -c "import jax; print(f'Jax backend: {jax.default_backend()}')"</code></pre>
+
+    <h2>Step 2: Create and Run a Test Script</h2>
+    <p>Next, you'll create a simple script to test the profiling setup.</p>
+
+    <h3>Create the <code>test.py</code> Script:</h3>
+    <p>This script sets up a basic JAX computation and profiles it using XProf OSS.</p>
+    <pre><code>import jax
+from jax import numpy as jnp
+
+@jax.named_call
+def foo(x, y):
+    return (x + y) / 2.
+
+@jax.jit
+def bar(a):
+    def foo2(x, y):
+        return foo(x, y), None
+
+    out, _ = jax.lax.scan(foo2, 0., a)
+    return out
+
+a = jnp.array([1., 2., 3., 4., 5.])
+
+print(jax.devices())
+jax.profiler.start_trace('/tmp/tensorboard')
+with jax.profiler.StepTraceAnnotation('step', step_num=0):  # JIT warm-up
+    out = bar(a)
+with jax.profiler.StepTraceAnnotation('step', step_num=1):
+    out = bar(a)
+    out.block_until_ready()
+jax.profiler.stop_trace()</code></pre>
+
+    <h3>Run the Script:</h3>
+    <p>Execute the script to generate profiling data.</p>
+    <pre><code>python3 test.py</code></pre>
+
+    <h2>Step 3: Visualize the Profiling Data with TensorBoard</h2>
+    <p>Now that you have the profiling data, you can visualize it using TensorBoard.</p>
+
+    <h3>Launch TensorBoard:</h3>
+    <p>Start TensorBoard and point it to the directory where the profiling data was saved.</p>
+    <pre><code>tensorboard --port 6006 --logdir /tmp/tensorboard</code></pre>
+
+    <h3>Access TensorBoard:</h3>
+    <p>Open your web browser and navigate to <a href="http://localhost:6006">http://localhost:6006</a> to see the profiling results.</p>
+
+    <h2>Step 4: Run an Additional Example (Optional)</h2>
+    <p>For a more complex example, you can run a script that uses the MNIST dataset.</p>
+
+    <h3>Install Additional Dependencies:</h3>
+    <p>Install TensorFlow datasets, which include the MNIST dataset.</p>
+    <pre><code>pip install tensorflow_datasets</code></pre>
+
+    <h3>Download and Run the MNIST Script:</h3>
+    <p>Download the <code>mnist.py</code> script from the provided GitHub link and run it.</p>
+    <pre><code>wget https://raw.githubusercontent.com/jiayongle/colabs/main/python/mnist.py
+python3 mnist.py</code></pre>
+
+    <h2>Conclusion</h2>
+    <p>You have now successfully set up XProf OSS for GPU profiling, created a test script, and visualized the results using TensorBoard. This setup allows you to profile machine learning workloads and gain insights into performance bottlenecks, making it easier to optimize your models.</p>
+    <p>If you have any issues or questions, feel free to explore the documentation or reach out to the community for support. Happy profiling!</p>
+
+</body>
+</html>
