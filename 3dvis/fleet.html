@@ -6,9 +6,17 @@
     <style>
         body { margin: 0; }
         canvas { display: block; }
+        #label-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            color: black;
+        }
     </style>
 </head>
 <body>
+    <div id="label-container"></div>
     <!-- Include Three.js and OrbitControls.js via script tags -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -43,7 +51,72 @@
         scene.add(directionalLight);
 
         // Core data from the provided topology
-        const cores = [/*... your cores data ...*/]; // (same as before, truncated for brevity)
+        const cores = [
+            {"globalId":0,"hostX":0,"hostY":0,"hostZ":0,"indexOnHost":0,"x":0,"y":0,"z":0},
+            {"globalId":1,"hostX":0,"hostY":0,"hostZ":0,"indexOnHost":1,"x":1,"y":0,"z":0},
+            {"globalId":4,"hostX":0,"hostY":0,"hostZ":0,"indexOnHost":2,"x":0,"y":1,"z":0},
+            {"globalId":5,"hostX":0,"hostY":0,"hostZ":0,"indexOnHost":3,"x":1,"y":1,"z":0},
+            {"globalId":2,"hostX":1,"hostY":0,"hostZ":0,"indexOnHost":0,"x":2,"y":0,"z":0},
+            {"globalId":3,"hostX":1,"hostY":0,"hostZ":0,"indexOnHost":1,"x":3,"y":0,"z":0},
+            {"globalId":6,"hostX":1,"hostY":0,"hostZ":0,"indexOnHost":2,"x":2,"y":1,"z":0},
+            {"globalId":7,"hostX":1,"hostY":0,"hostZ":0,"indexOnHost":3,"x":3,"y":1,"z":0},
+            {"globalId":8,"hostX":0,"hostY":1,"hostZ":0,"indexOnHost":0,"x":0,"y":2,"z":0},
+            {"globalId":9,"hostX":0,"hostY":1,"hostZ":0,"indexOnHost":1,"x":1,"y":2,"z":0},
+            {"globalId":12,"hostX":0,"hostY":1,"hostZ":0,"indexOnHost":2,"x":0,"y":3,"z":0},
+            {"globalId":13,"hostX":0,"hostY":1,"hostZ":0,"indexOnHost":3,"x":1,"y":3,"z":0},
+            {"globalId":10,"hostX":1,"hostY":1,"hostZ":0,"indexOnHost":0,"x":2,"y":2,"z":0},
+            {"globalId":11,"hostX":1,"hostY":1,"hostZ":0,"indexOnHost":1,"x":3,"y":2,"z":0},
+            {"globalId":14,"hostX":1,"hostY":1,"hostZ":0,"indexOnHost":2,"x":2,"y":3,"z":0},
+            {"globalId":15,"hostX":1,"hostY":1,"hostZ":0,"indexOnHost":3,"x":3,"y":3,"z":0},
+            {"globalId":16,"hostX":0,"hostY":0,"hostZ":1,"indexOnHost":0,"x":0,"y":0,"z":1},
+            {"globalId":17,"hostX":0,"hostY":0,"hostZ":1,"indexOnHost":1,"x":1,"y":0,"z":1},
+            {"globalId":20,"hostX":0,"hostY":0,"hostZ":1,"indexOnHost":2,"x":0,"y":1,"z":1},
+            {"globalId":21,"hostX":0,"hostY":0,"hostZ":1,"indexOnHost":3,"x":1,"y":1,"z":1},
+            {"globalId":18,"hostX":1,"hostY":0,"hostZ":1,"indexOnHost":0,"x":2,"y":0,"z":1},
+            {"globalId":19,"hostX":1,"hostY":0,"hostZ":1,"indexOnHost":1,"x":3,"y":0,"z":1},
+            {"globalId":22,"hostX":1,"hostY":0,"hostZ":1,"indexOnHost":2,"x":2,"y":1,"z":1},
+            {"globalId":23,"hostX":1,"hostY":0,"hostZ":1,"indexOnHost":3,"x":3,"y":1,"z":1},
+            {"globalId":24,"hostX":0,"hostY":1,"hostZ":1,"indexOnHost":0,"x":0,"y":2,"z":1},
+            {"globalId":25,"hostX":0,"hostY":1,"hostZ":1,"indexOnHost":1,"x":1,"y":2,"z":1},
+            {"globalId":28,"hostX":0,"hostY":1,"hostZ":1,"indexOnHost":2,"x":0,"y":3,"z":1},
+            {"globalId":29,"hostX":0,"hostY":1,"hostZ":1,"indexOnHost":3,"x":1,"y":3,"z":1},
+            {"globalId":26,"hostX":1,"hostY":1,"hostZ":1,"indexOnHost":0,"x":2,"y":2,"z":1},
+            {"globalId":27,"hostX":1,"hostY":1,"hostZ":1,"indexOnHost":1,"x":3,"y":2,"z":1},
+            {"globalId":30,"hostX":1,"hostY":1,"hostZ":1,"indexOnHost":2,"x":2,"y":3,"z":1},
+            {"globalId":31,"hostX":1,"hostY":1,"hostZ":1,"indexOnHost":3,"x":3,"y":3,"z":1},
+            {"globalId":32,"hostX":0,"hostY":0,"hostZ":2,"indexOnHost":0,"x":0,"y":0,"z":2},
+            {"globalId":33,"hostX":0,"hostY":0,"hostZ":2,"indexOnHost":1,"x":1,"y":0,"z":2},
+            {"globalId":36,"hostX":0,"hostY":0,"hostZ":2,"indexOnHost":2,"x":0,"y":1,"z":2},
+            {"globalId":37,"hostX":0,"hostY":0,"hostZ":2,"indexOnHost":3,"x":1,"y":1,"z":2},
+            {"globalId":34,"hostX":1,"hostY":0,"hostZ":2,"indexOnHost":0,"x":2,"y":0,"z":2},
+            {"globalId":35,"hostX":1,"hostY":0,"hostZ":2,"indexOnHost":1,"x":3,"y":0,"z":2},
+            {"globalId":38,"hostX":1,"hostY":0,"hostZ":2,"indexOnHost":2,"x":2,"y":1,"z":2},
+            {"globalId":39,"hostX":1,"hostY":0,"hostZ":2,"indexOnHost":3,"x":3,"y":1,"z":2},
+            {"globalId":40,"hostX":0,"hostY":1,"hostZ":2,"indexOnHost":0,"x":0,"y":2,"z":2},
+            {"globalId":41,"hostX":0,"hostY":1,"hostZ":2,"indexOnHost":1,"x":1,"y":2,"z":2},
+            {"globalId":44,"hostX":0,"hostY":1,"hostZ":2,"indexOnHost":2,"x":0,"y":3,"z":2},
+            {"globalId":45,"hostX":0,"hostY":1,"hostZ":2,"indexOnHost":3,"x":1,"y":3,"z":2},
+            {"globalId":42,"hostX":1,"hostY":1,"hostZ":2,"indexOnHost":0,"x":2,"y":2,"z":2},
+            {"globalId":43,"hostX":1,"hostY":1,"hostZ":2,"indexOnHost":1,"x":3,"y":2,"z":2},
+            {"globalId":46,"hostX":1,"hostY":1,"hostZ":2,"indexOnHost":2,"x":2,"y":3,"z":2},
+            {"globalId":47,"hostX":1,"hostY":1,"hostZ":2,"indexOnHost":3,"x":3,"y":3,"z":2},
+            {"globalId":48,"hostX":0,"hostY":0,"hostZ":3,"indexOnHost":0,"x":0,"y":0,"z":3},
+            {"globalId":49,"hostX":0,"hostY":0,"hostZ":3,"indexOnHost":1,"x":1,"y":0,"z":3},
+            {"globalId":52,"hostX":0,"hostY":0,"hostZ":3,"indexOnHost":2,"x":0,"y":1,"z":3},
+            {"globalId":53,"hostX":0,"hostY":0,"hostZ":3,"indexOnHost":3,"x":1,"y":1,"z":3},
+            {"globalId":50,"hostX":1,"hostY":0,"hostZ":3,"indexOnHost":0,"x":2,"y":0,"z":3},
+            {"globalId":51,"hostX":1,"hostY":0,"hostZ":3,"indexOnHost":1,"x":3,"y":0,"z":3},
+            {"globalId":54,"hostX":1,"hostY":0,"hostZ":3,"indexOnHost":2,"x":2,"y":1,"z":3},
+            {"globalId":55,"hostX":1,"hostY":0,"hostZ":3,"indexOnHost":3,"x":3,"y":1,"z":3},
+            {"globalId":56,"hostX":0,"hostY":1,"hostZ":3,"indexOnHost":0,"x":0,"y":2,"z":3},
+            {"globalId":57,"hostX":0,"hostY":1,"hostZ":3,"indexOnHost":1,"x":1,"y":2,"z":3},
+            {"globalId":60,"hostX":0,"hostY":1,"hostZ":3,"indexOnHost":2,"x":0,"y":3,"z":3},
+            {"globalId":61,"hostX":0,"hostY":1,"hostZ":3,"indexOnHost":3,"x":1,"y":3,"z":3},
+            {"globalId":58,"hostX":1,"hostY":1,"hostZ":3,"indexOnHost":0,"x":2,"y":2,"z":3},
+            {"globalId":59,"hostX":1,"hostY":1,"hostZ":3,"indexOnHost":1,"x":3,"y":2,"z":3},
+            {"globalId":62,"hostX":1,"hostY":1,"hostZ":3,"indexOnHost":2,"x":2,"y":3,"z":3},
+            {"globalId":63,"hostX":1,"hostY":1,"hostZ":3,"indexOnHost":3,"x":3,"y":3,"z":3}
+        ];
 
         // Generate host data from cores
         const hostMap = {};
@@ -76,49 +149,10 @@
             host.z = sumZ / numCores;
         });
 
-        // Function to create a text sprite for labels
-        function createTextSprite(message) {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            const fontSize = 80; // Adjust as needed
-            const padding = 10; // Padding around text
+        // Label container for HTML-based labels
+        const labelContainer = document.getElementById('label-container');
 
-            context.font = `Bold ${fontSize}px Arial`;
-
-            // Measure the text width to set canvas size
-            const metrics = context.measureText(message);
-            const textWidth = metrics.width;
-
-            canvas.width = textWidth + padding * 2;
-            canvas.height = fontSize + padding * 2;
-
-            // Reapply font since canvas size was changed
-            context.font = `Bold ${fontSize}px Arial`;
-            context.textAlign = 'center';
-            context.textBaseline = 'middle';
-
-            // Optional: Background color
-            // context.fillStyle = 'rgba(255, 255, 255, 0.7)';
-            // context.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Text color
-            context.fillStyle = 'black';
-            context.fillText(message, canvas.width / 2, canvas.height / 2);
-
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.needsUpdate = true;
-
-            const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true });
-            const sprite = new THREE.Sprite(spriteMaterial);
-
-            // Scale sprite to make it readable
-            const scaleFactor = 0.5; // Adjust as needed
-            sprite.scale.set(canvas.width / canvas.height * scaleFactor, scaleFactor, 1);
-
-            return sprite;
-        }
-
-        // Function to create a sphere (representing a node) with a text label
+        // Function to create a sphere (representing a node)
         function createNode(x, y, z, label, color) {
             const geometry = new THREE.SphereGeometry(0.2, 32, 32);
             const material = new THREE.MeshPhongMaterial({ color: color });
@@ -126,12 +160,14 @@
             node.position.set(x, y, z);
             scene.add(node);
 
-            // Create a text sprite for the label
-            const sprite = createTextSprite(label);
-            sprite.position.set(x, y + 0.4, z); // Position above the node
-            scene.add(sprite);
-
-            node.userData.labelSprite = sprite;
+            // Create a label element and append to the label container
+            const div = document.createElement('div');
+            div.className = 'label';
+            div.style.position = 'absolute';
+            div.style.color = 'black';
+            div.textContent = label;
+            labelContainer.appendChild(div);
+            node.userData.labelElement = div;
 
             return node;
         }
@@ -157,7 +193,7 @@
 
         // Create all cores (devices) and store the node in the core object
         const coreNodes = cores.map(core => {
-            const label = "d" + core.globalId + "(" + core.x + "," + core.y + "," + core.z + ")";
+            const label = "d" + core.globalId;
             const node = createNode(core.x, core.y, core.z, label, 0x00ff00); // Green color for cores
             core.node = node; // Store the node in the core object
             return node;
@@ -208,10 +244,27 @@
             }
         });
 
+        // Update labels' positions
+        function updateLabels() {
+            hostNodes.concat(coreNodes).forEach(node => {
+                const vector = node.position.clone();
+                vector.project(camera);
+
+                const widthHalf = window.innerWidth / 2;
+                const heightHalf = window.innerHeight / 2;
+
+                const x = vector.x * widthHalf + widthHalf;
+                const y = -vector.y * heightHalf + heightHalf;
+
+                node.userData.labelElement.style.transform = `translate(-50%, -50%) translate(${x}px,${y}px)`;
+            });
+        }
+
         // Animation loop
         function animate() {
             requestAnimationFrame(animate);
             controls.update(); // Enable zoom and rotation controls
+            updateLabels(); // Update label positions
             renderer.render(scene, camera);
         }
         animate();
