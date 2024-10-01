@@ -21,8 +21,8 @@
         document.body.appendChild(renderer.domElement);
 
         // Variables to control layout
-        var xStride = 2, yStride = 2, zStride = 1;
-        var hostSize = 0.2;
+        var xStride = 2, yStride = 2, zStride = 5; // ZStride increased to 5 for better 3D depth visibility
+        var hostSize = 0.3;
 
         // Topology data
         var cores = [
@@ -44,7 +44,7 @@
             {"globalId":15,"x":3,"y":3,"z":0}
         ];
 
-        // Create nodes for each core
+        // Create nodes for each core (chips)
         var nodes = [];
         var geometry = new THREE.SphereGeometry(hostSize, 32, 32);
         var material = new THREE.MeshBasicMaterial({ color: 0x0077ff });
@@ -76,13 +76,23 @@
             });
         });
 
+        // Add a grid helper to better visualize the 3D space
+        var gridHelper = new THREE.GridHelper(20, 20);
+        scene.add(gridHelper);
+
+        // Set up orbit controls (optional)
+        var controls = new THREE.OrbitControls(camera, renderer.domElement);
+
         // Camera position and render loop
-        camera.position.z = 10;
+        camera.position.set(5, 5, 10);
+        controls.update();
 
         function animate() {
             requestAnimationFrame(animate);
+            controls.update();
             renderer.render(scene, camera);
         }
+
         animate();
 
     </script>
