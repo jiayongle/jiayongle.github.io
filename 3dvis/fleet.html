@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Chip Topology with Hosts</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Create the scene
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xdddddd);
+
+        // Create a camera
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        camera.position.z = 12;
+
+        // Create a renderer
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create core data
+        const cores = [
+            {globalId: 0, hostX: 0, hostY: 0, hostZ: 0, x: 0, y: 0, z: 2},
+            {globalId: 1, hostX: 0, hostY: 0, hostZ: 0, x: 1, y: 0, z: 2},
+            {globalId: 4, hostX: 0, hostY: 0, hostZ: 0, x: 0, y: 1, z: 2},
+            {globalId: 5, hostX: 0, hostY: 0, hostZ: 0, x: 1, y: 1, z: 2},
+            {globalId: 2, hostX: 1, hostY: 0, hostZ: 0, x: 2, y: 0, z: 2},
+            {globalId: 3, hostX: 1, hostY: 0, hostZ: 0, x: 3, y: 0, z: 2},
+            {globalId: 6, hostX: 1, hostY: 0, hostZ: 0, x: 2, y: 1, z: 2},
+            {globalId: 7, hostX: 1, hostY: 0, hostZ: 0, x: 3, y: 1, z: 2},
+            {globalId: 8, hostX: 0, hostY: 1, hostZ: 0, x: 0, y: 2, z: 2},
+            {globalId: 9, hostX: 0, hostY: 1, hostZ: 0, x: 1, y: 2, z: 2},
+            {globalId: 12, hostX: 0, hostY: 1, hostZ: 0, x: 0, y: 3, z: 2},
+            {globalId: 13, hostX: 0, hostY: 1, hostZ: 0, x: 1, y: 3, z: 2},
+            {globalId: 10, hostX: 1, hostY: 1, hostZ: 0, x: 2, y: 2, z: 2},
+            {globalId: 11, hostX: 1, hostY: 1, hostZ: 0, x: 3, y: 2, z: 2},
+            {globalId: 14, hostX: 1, hostY: 1, hostZ: 0, x: 2, y: 3, z: 2},
+            {globalId: 15, hostX: 1, hostY: 1, hostZ: 0, x: 3, y: 3, z: 2}
+        ];
+
+        // Create host data
+        const hosts = [
+            {hostX: 0, hostY: 0, hostZ: 0, x: 0.5, y: 0.5, z: 0},
+            {hostX: 1, hostY: 0, hostZ: 0, x: 2.5, y: 0.5, z: 0},
+            {hostX: 0, hostY: 1, hostZ: 0, x: 0.5, y: 2.5, z: 0},
+            {hostX: 1, hostY: 1, hostZ: 0, x: 2.5, y: 2.5, z: 0}
+        ];
+
+        // Function to create a sphere (representing a node)
+        function createNode(x, y, z, label, color) {
+            const geometry = new THREE.SphereGeometry(0.2, 32, 32);
+            const material = new THREE.MeshBasicMaterial({ color: color });
+            const node = new THREE.Mesh(geometry, material);
+            node.position.set(x, y, z);
+            scene.add(node);
+            
+            // Create a label for the node
+            const div = document.createElement('div');
+            div.style.position = 'absolute';
+            div.style.color = 'black';
+            div.innerHTML = label;
+            div.style.top = `${(node.position.y + 5) * 30}px`;
+            div.style.left = `${(node.position.x + 5) * 30}px`;
+            document.body.appendChild(div);
+        }
+
+        // Function to create an edge between two nodes
+        function createEdge(x1, y1, z1, x2, y2, z2) {
+            const material = new THREE.LineBasicMaterial({ color: 0x0000ff });
+            const points = [];
+            points.push(new THREE.Vector3(x1, y1, z1));
+            points.push(new THREE.Vector3(x2, y2, z2));
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const line = new THREE.Line(geometry, material);
+            scene.add(line);
+        }
+
+        // Create all hosts
+        hosts.forEach(host => {
+            createNode(host.x, host.y, host.z, "host", 0xff0000);  // Red color for hosts
+        });
+
+        // Create all cores (devices)
+        cores.forEach(core => {
+            createNode(core.x, core.y, core.z, "device", 0x00ff00);  // Green color for cores
+        });
+
+        // Create edges (connections between chips)
+        for (let i = 0; i < cores.length; i++) {
+            for (let j = i + 1; j < cores.length; j++) {
+                if (Math.abs(cores[i].x - cores[j].x) <= 1 &&
+                    Math.abs(cores[i].y - cores[j].y) <= 1 &&
+                    Math.abs(cores[i].z - cores[j].z) <= 1) {
+                    createEdge(cores[i].x, cores[i].y, cores[i].z, cores[j].x, cores[j].y, cores[j].z);
+                }
+            }
+        }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
