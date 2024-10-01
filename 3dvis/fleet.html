@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Chip Topology with Zoom and Rotation</title>
     <style>
         body { margin: 0; }
@@ -19,9 +18,9 @@
 <body>
     <div id="label-container"></div>
     <script type="module">
-        // Import Three.js and OrbitControls as modules
-        import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
-        import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
+        // Import Three.js and OrbitControls as modules from unpkg.com
+        import * as THREE from 'https://unpkg.com/three@0.128.0/build/three.module.js';
+        import { OrbitControls } from 'https://unpkg.com/three@0.128.0/examples/jsm/controls/OrbitControls.js';
 
         // Create the scene
         const scene = new THREE.Scene();
