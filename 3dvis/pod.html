@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Topology Visualization</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+
+        // Scene, camera, and renderer setup
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Variables to control layout
+        var xStride = 2, yStride = 2, zStride = 1;
+        var hostSize = 0.2;
+
+        // Topology data
+        var cores = [
+            {"globalId":0,"x":0,"y":0,"z":0},
+            {"globalId":1,"x":1,"y":0,"z":0},
+            {"globalId":4,"x":0,"y":1,"z":0},
+            {"globalId":5,"x":1,"y":1,"z":0},
+            {"globalId":2,"x":2,"y":0,"z":0},
+            {"globalId":3,"x":3,"y":0,"z":0},
+            {"globalId":6,"x":2,"y":1,"z":0},
+            {"globalId":7,"x":3,"y":1,"z":0},
+            {"globalId":8,"x":0,"y":2,"z":0},
+            {"globalId":9,"x":1,"y":2,"z":0},
+            {"globalId":12,"x":0,"y":3,"z":0},
+            {"globalId":13,"x":1,"y":3,"z":0},
+            {"globalId":10,"x":2,"y":2,"z":0},
+            {"globalId":11,"x":3,"y":2,"z":0},
+            {"globalId":14,"x":2,"y":3,"z":0},
+            {"globalId":15,"x":3,"y":3,"z":0}
+        ];
+
+        // Create nodes for each core
+        var nodes = [];
+        var geometry = new THREE.SphereGeometry(hostSize, 32, 32);
+        var material = new THREE.MeshBasicMaterial({ color: 0x0077ff });
+
+        cores.forEach(function(core) {
+            var node = new THREE.Mesh(geometry, material);
+            node.position.set(core.x * xStride, core.y * yStride, core.z * zStride);
+            scene.add(node);
+            nodes.push({ object: node, core: core });
+        });
+
+        // Connect the nodes based on the difference in x, y, z positions
+        var materialLine = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+        nodes.forEach(function(node1) {
+            nodes.forEach(function(node2) {
+                if (node1.core.globalId !== node2.core.globalId) {
+                    var diffX = Math.abs(node1.core.x - node2.core.x);
+                    var diffY = Math.abs(node1.core.y - node2.core.y);
+                    var diffZ = Math.abs(node1.core.z - node2.core.z);
+                    if (diffX + diffY + diffZ === 1) {
+                        var points = [];
+                        points.push(new THREE.Vector3(node1.object.position.x, node1.object.position.y, node1.object.position.z));
+                        points.push(new THREE.Vector3(node2.object.position.x, node2.object.position.y, node2.object.position.z));
+                        var geometryLine = new THREE.BufferGeometry().setFromPoints(points);
+                        var line = new THREE.Line(geometryLine, materialLine);
+                        scene.add(line);
+                    }
+                }
+            });
+        });
+
+        // Camera position and render loop
+        camera.position.z = 10;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+    </script>
+</body>
+</html>
