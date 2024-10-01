@@ -32,7 +32,7 @@
             0.1,
             1000
         );
-        camera.position.set(5, 5, 10);
+        camera.position.set(6, 6, 10);
 
         // Create a renderer
         const renderer = new THREE.WebGLRenderer();
@@ -42,33 +42,90 @@
         // Add OrbitControls for zoom and rotation
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-        // Create core data
+        // Core data from the provided topology
         const cores = [
-            { globalId: 0, hostX: 0, hostY: 0, hostZ: 0, x: 0, y: 0, z: 2 },
-            { globalId: 1, hostX: 0, hostY: 0, hostZ: 0, x: 1, y: 0, z: 2 },
-            { globalId: 4, hostX: 0, hostY: 0, hostZ: 0, x: 0, y: 1, z: 2 },
-            { globalId: 5, hostX: 0, hostY: 0, hostZ: 0, x: 1, y: 1, z: 2 },
-            { globalId: 2, hostX: 1, hostY: 0, hostZ: 0, x: 2, y: 0, z: 2 },
-            { globalId: 3, hostX: 1, hostY: 0, hostZ: 0, x: 3, y: 0, z: 2 },
-            { globalId: 6, hostX: 1, hostY: 0, hostZ: 0, x: 2, y: 1, z: 2 },
-            { globalId: 7, hostX: 1, hostY: 0, hostZ: 0, x: 3, y: 1, z: 2 },
-            { globalId: 8, hostX: 0, hostY: 1, hostZ: 0, x: 0, y: 2, z: 2 },
-            { globalId: 9, hostX: 0, hostY: 1, hostZ: 0, x: 1, y: 2, z: 2 },
-            { globalId: 12, hostX: 0, hostY: 1, hostZ: 0, x: 0, y: 3, z: 2 },
-            { globalId: 13, hostX: 0, hostY: 1, hostZ: 0, x: 1, y: 3, z: 2 },
-            { globalId: 10, hostX: 1, hostY: 1, hostZ: 0, x: 2, y: 2, z: 2 },
-            { globalId: 11, hostX: 1, hostY: 1, hostZ: 0, x: 3, y: 2, z: 2 },
-            { globalId: 14, hostX: 1, hostY: 1, hostZ: 0, x: 2, y: 3, z: 2 },
-            { globalId: 15, hostX: 1, hostY: 1, hostZ: 0, x: 3, y: 3, z: 2 }
+            {"globalId":0,"hostX":0,"hostY":0,"hostZ":0,"indexOnHost":0,"x":0,"y":0,"z":0},
+            {"globalId":1,"hostX":0,"hostY":0,"hostZ":0,"indexOnHost":1,"x":1,"y":0,"z":0},
+            {"globalId":4,"hostX":0,"hostY":0,"hostZ":0,"indexOnHost":2,"x":0,"y":1,"z":0},
+            {"globalId":5,"hostX":0,"hostY":0,"hostZ":0,"indexOnHost":3,"x":1,"y":1,"z":0},
+            {"globalId":2,"hostX":1,"hostY":0,"hostZ":0,"indexOnHost":0,"x":2,"y":0,"z":0},
+            {"globalId":3,"hostX":1,"hostY":0,"hostZ":0,"indexOnHost":1,"x":3,"y":0,"z":0},
+            {"globalId":6,"hostX":1,"hostY":0,"hostZ":0,"indexOnHost":2,"x":2,"y":1,"z":0},
+            {"globalId":7,"hostX":1,"hostY":0,"hostZ":0,"indexOnHost":3,"x":3,"y":1,"z":0},
+            {"globalId":8,"hostX":0,"hostY":1,"hostZ":0,"indexOnHost":0,"x":0,"y":2,"z":0},
+            {"globalId":9,"hostX":0,"hostY":1,"hostZ":0,"indexOnHost":1,"x":1,"y":2,"z":0},
+            {"globalId":12,"hostX":0,"hostY":1,"hostZ":0,"indexOnHost":2,"x":0,"y":3,"z":0},
+            {"globalId":13,"hostX":0,"hostY":1,"hostZ":0,"indexOnHost":3,"x":1,"y":3,"z":0},
+            {"globalId":10,"hostX":1,"hostY":1,"hostZ":0,"indexOnHost":0,"x":2,"y":2,"z":0},
+            {"globalId":11,"hostX":1,"hostY":1,"hostZ":0,"indexOnHost":1,"x":3,"y":2,"z":0},
+            {"globalId":14,"hostX":1,"hostY":1,"hostZ":0,"indexOnHost":2,"x":2,"y":3,"z":0},
+            {"globalId":15,"hostX":1,"hostY":1,"hostZ":0,"indexOnHost":3,"x":3,"y":3,"z":0},
+            {"globalId":16,"hostX":0,"hostY":0,"hostZ":1,"indexOnHost":0,"x":0,"y":0,"z":1},
+            {"globalId":17,"hostX":0,"hostY":0,"hostZ":1,"indexOnHost":1,"x":1,"y":0,"z":1},
+            {"globalId":20,"hostX":0,"hostY":0,"hostZ":1,"indexOnHost":2,"x":0,"y":1,"z":1},
+            {"globalId":21,"hostX":0,"hostY":0,"hostZ":1,"indexOnHost":3,"x":1,"y":1,"z":1},
+            {"globalId":18,"hostX":1,"hostY":0,"hostZ":1,"indexOnHost":0,"x":2,"y":0,"z":1},
+            {"globalId":19,"hostX":1,"hostY":0,"hostZ":1,"indexOnHost":1,"x":3,"y":0,"z":1},
+            {"globalId":22,"hostX":1,"hostY":0,"hostZ":1,"indexOnHost":2,"x":2,"y":1,"z":1},
+            {"globalId":23,"hostX":1,"hostY":0,"hostZ":1,"indexOnHost":3,"x":3,"y":1,"z":1},
+            {"globalId":24,"hostX":0,"hostY":1,"hostZ":1,"indexOnHost":0,"x":0,"y":2,"z":1},
+            {"globalId":25,"hostX":0,"hostY":1,"hostZ":1,"indexOnHost":1,"x":1,"y":2,"z":1},
+            {"globalId":28,"hostX":0,"hostY":1,"hostZ":1,"indexOnHost":2,"x":0,"y":3,"z":1},
+            {"globalId":29,"hostX":0,"hostY":1,"hostZ":1,"indexOnHost":3,"x":1,"y":3,"z":1},
+            {"globalId":26,"hostX":1,"hostY":1,"hostZ":1,"indexOnHost":0,"x":2,"y":2,"z":1},
+            {"globalId":27,"hostX":1,"hostY":1,"hostZ":1,"indexOnHost":1,"x":3,"y":2,"z":1},
+            {"globalId":30,"hostX":1,"hostY":1,"hostZ":1,"indexOnHost":2,"x":2,"y":3,"z":1},
+            {"globalId":31,"hostX":1,"hostY":1,"hostZ":1,"indexOnHost":3,"x":3,"y":3,"z":1},
+            {"globalId":32,"hostX":0,"hostY":0,"hostZ":2,"indexOnHost":0,"x":0,"y":0,"z":2},
+            {"globalId":33,"hostX":0,"hostY":0,"hostZ":2,"indexOnHost":1,"x":1,"y":0,"z":2},
+            {"globalId":36,"hostX":0,"hostY":0,"hostZ":2,"indexOnHost":2,"x":0,"y":1,"z":2},
+            {"globalId":37,"hostX":0,"hostY":0,"hostZ":2,"indexOnHost":3,"x":1,"y":1,"z":2},
+            {"globalId":34,"hostX":1,"hostY":0,"hostZ":2,"indexOnHost":0,"x":2,"y":0,"z":2},
+            {"globalId":35,"hostX":1,"hostY":0,"hostZ":2,"indexOnHost":1,"x":3,"y":0,"z":2},
+            {"globalId":38,"hostX":1,"hostY":0,"hostZ":2,"indexOnHost":2,"x":2,"y":1,"z":2},
+            {"globalId":39,"hostX":1,"hostY":0,"hostZ":2,"indexOnHost":3,"x":3,"y":1,"z":2},
+            {"globalId":40,"hostX":0,"hostY":1,"hostZ":2,"indexOnHost":0,"x":0,"y":2,"z":2},
+            {"globalId":41,"hostX":0,"hostY":1,"hostZ":2,"indexOnHost":1,"x":1,"y":2,"z":2},
+            {"globalId":44,"hostX":0,"hostY":1,"hostZ":2,"indexOnHost":2,"x":0,"y":3,"z":2},
+            {"globalId":45,"hostX":0,"hostY":1,"hostZ":2,"indexOnHost":3,"x":1,"y":3,"z":2},
+            {"globalId":42,"hostX":1,"hostY":1,"hostZ":2,"indexOnHost":0,"x":2,"y":2,"z":2},
+            {"globalId":43,"hostX":1,"hostY":1,"hostZ":2,"indexOnHost":1,"x":3,"y":2,"z":2},
+            {"globalId":46,"hostX":1,"hostY":1,"hostZ":2,"indexOnHost":2,"x":2,"y":3,"z":2},
+            {"globalId":47,"hostX":1,"hostY":1,"hostZ":2,"indexOnHost":3,"x":3,"y":3,"z":2},
+            {"globalId":48,"hostX":0,"hostY":0,"hostZ":3,"indexOnHost":0,"x":0,"y":0,"z":3},
+            {"globalId":49,"hostX":0,"hostY":0,"hostZ":3,"indexOnHost":1,"x":1,"y":0,"z":3},
+            {"globalId":52,"hostX":0,"hostY":0,"hostZ":3,"indexOnHost":2,"x":0,"y":1,"z":3},
+            {"globalId":53,"hostX":0,"hostY":0,"hostZ":3,"indexOnHost":3,"x":1,"y":1,"z":3},
+            {"globalId":50,"hostX":1,"hostY":0,"hostZ":3,"indexOnHost":0,"x":2,"y":0,"z":3},
+            {"globalId":51,"hostX":1,"hostY":0,"hostZ":3,"indexOnHost":1,"x":3,"y":0,"z":3},
+            {"globalId":54,"hostX":1,"hostY":0,"hostZ":3,"indexOnHost":2,"x":2,"y":1,"z":3},
+            {"globalId":55,"hostX":1,"hostY":0,"hostZ":3,"indexOnHost":3,"x":3,"y":1,"z":3},
+            {"globalId":56,"hostX":0,"hostY":1,"hostZ":3,"indexOnHost":0,"x":0,"y":2,"z":3},
+            {"globalId":57,"hostX":0,"hostY":1,"hostZ":3,"indexOnHost":1,"x":1,"y":2,"z":3},
+            {"globalId":60,"hostX":0,"hostY":1,"hostZ":3,"indexOnHost":2,"x":0,"y":3,"z":3},
+            {"globalId":61,"hostX":0,"hostY":1,"hostZ":3,"indexOnHost":3,"x":1,"y":3,"z":3},
+            {"globalId":58,"hostX":1,"hostY":1,"hostZ":3,"indexOnHost":0,"x":2,"y":2,"z":3},
+            {"globalId":59,"hostX":1,"hostY":1,"hostZ":3,"indexOnHost":1,"x":3,"y":2,"z":3},
+            {"globalId":62,"hostX":1,"hostY":1,"hostZ":3,"indexOnHost":2,"x":2,"y":3,"z":3},
+            {"globalId":63,"hostX":1,"hostY":1,"hostZ":3,"indexOnHost":3,"x":3,"y":3,"z":3}
         ];
 
-        // Create host data
-        const hosts = [
-            { hostX: 0, hostY: 0, hostZ: 0, x: 0.5, y: 0.5, z: 0 },
-            { hostX: 1, hostY: 0, hostZ: 0, x: 2.5, y: 0.5, z: 0 },
-            { hostX: 0, hostY: 1, hostZ: 0, x: 0.5, y: 2.5, z: 0 },
-            { hostX: 1, hostY: 1, hostZ: 0, x: 2.5, y: 2.5, z: 0 }
-        ];
+        // Generate host data from cores
+        const hostMap = {};
+        cores.forEach(core => {
+            const key = `${core.hostX},${core.hostY},${core.hostZ}`;
+            if (!hostMap[key]) {
+                hostMap[key] = {
+                    hostX: core.hostX,
+                    hostY: core.hostY,
+                    hostZ: core.hostZ,
+                    x: core.hostX * 2 + 0.5, // Adjust position as needed
+                    y: core.hostY * 2 + 0.5,
+                    z: core.hostZ * 2 + 0.5
+                };
+            }
+        });
+        const hosts = Object.values(hostMap);
 
         // Label container for HTML-based labels
         const labelContainer = document.getElementById('label-container');
@@ -94,8 +151,8 @@
         }
 
         // Function to create an edge between two nodes
-        function createEdge(x1, y1, z1, x2, y2, z2) {
-            const material = new THREE.LineBasicMaterial({ color: 0x0000ff });
+        function createEdge(x1, y1, z1, x2, y2, z2, color = 0x0000ff) {
+            const material = new THREE.LineBasicMaterial({ color: color });
             const points = [];
             points.push(new THREE.Vector3(x1, y1, z1));
             points.push(new THREE.Vector3(x2, y2, z2));
@@ -124,7 +181,10 @@
                 if (
                     Math.abs(cores[i].x - cores[j].x) <= 1 &&
                     Math.abs(cores[i].y - cores[j].y) <= 1 &&
-                    Math.abs(cores[i].z - cores[j].z) <= 1
+                    Math.abs(cores[i].z - cores[j].z) <= 1 &&
+                    (Math.abs(cores[i].x - cores[j].x) +
+                     Math.abs(cores[i].y - cores[j].y) +
+                     Math.abs(cores[i].z - cores[j].z) === 1) // Direct neighbors
                 ) {
                     createEdge(
                         cores[i].x,
@@ -154,7 +214,8 @@
                     core.z,
                     host.x,
                     host.y,
-                    host.z
+                    host.z,
+                    0xff00ff // Magenta color for host-device connections
                 );
             }
         });
@@ -193,4 +254,3 @@
     </script>
 </body>
 </html>
-
