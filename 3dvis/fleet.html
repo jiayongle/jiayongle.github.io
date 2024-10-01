@@ -127,6 +127,7 @@
                     hostX: core.hostX,
                     hostY: core.hostY,
                     hostZ: core.hostZ,
+                    key: key, // Store the hostMap key
                     cores: []
                 };
             }
@@ -184,14 +185,16 @@
 
         // Create all hosts and store the node in the host object
         const hostNodes = hosts.map(host => {
-            const node = createNode(host.x, host.y, host.z, "host", 0xff0000); // Red color for hosts
+            const label = "h(" + host.key + ")";
+            const node = createNode(host.x, host.y, host.z, label, 0xff0000); // Red color for hosts
             host.node = node; // Store the node in the host object
             return node;
         });
 
         // Create all cores (devices) and store the node in the core object
         const coreNodes = cores.map(core => {
-            const node = createNode(core.x, core.y, core.z, "device", 0x00ff00); // Green color for cores
+            const label = "d" + core.globalId;
+            const node = createNode(core.x, core.y, core.z, label, 0x00ff00); // Green color for cores
             core.node = node; // Store the node in the core object
             return node;
         });
