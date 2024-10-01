@@ -18,15 +18,22 @@
 </head>
 <body>
     <div id="label-container"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
-    <script>
+    <script type="module">
+        // Import Three.js and OrbitControls as modules
+        import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
+        import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
+
         // Create the scene
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xdddddd);
 
         // Create a camera
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
         camera.position.set(5, 5, 10);
 
         // Create a renderer
@@ -35,7 +42,7 @@
         document.body.appendChild(renderer.domElement);
 
         // Add OrbitControls for zoom and rotation
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        const controls = new OrbitControls(camera, renderer.domElement);
 
         // Create core data
         const cores = [
@@ -100,18 +107,31 @@
         }
 
         // Create all hosts
-        const hostNodes = hosts.map(host => createNode(host.x, host.y, host.z, "host", 0xff0000));  // Red color for hosts
+        const hostNodes = hosts.map(host =>
+            createNode(host.x, host.y, host.z, "host", 0xff0000)
+        ); // Red color for hosts
 
         // Create all cores (devices)
-        const coreNodes = cores.map(core => createNode(core.x, core.y, core.z, "device", 0x00ff00));  // Green color for cores
+        const coreNodes = cores.map(core =>
+            createNode(core.x, core.y, core.z, "device", 0x00ff00)
+        ); // Green color for cores
 
         // Create edges (connections between chips)
         for (let i = 0; i < cores.length; i++) {
             for (let j = i + 1; j < cores.length; j++) {
-                if (Math.abs(cores[i].x - cores[j].x) <= 1 &&
+                if (
+                    Math.abs(cores[i].x - cores[j].x) <= 1 &&
                     Math.abs(cores[i].y - cores[j].y) <= 1 &&
-                    Math.abs(cores[i].z - cores[j].z) <= 1) {
-                    createEdge(cores[i].x, cores[i].y, cores[i].z, cores[j].x, cores[j].y, cores[j].z);
+                    Math.abs(cores[i].z - cores[j].z) <= 1
+                ) {
+                    createEdge(
+                        cores[i].x,
+                        cores[i].y,
+                        cores[i].z,
+                        cores[j].x,
+                        cores[j].y,
+                        cores[j].z
+                    );
                 }
             }
         }
@@ -125,8 +145,8 @@
                 const widthHalf = window.innerWidth / 2;
                 const heightHalf = window.innerHeight / 2;
 
-                const x = (vector.x * widthHalf) + widthHalf;
-                const y = -(vector.y * heightHalf) + heightHalf;
+                const x = vector.x * widthHalf + widthHalf;
+                const y = -vector.y * heightHalf + heightHalf;
 
                 node.userData.labelElement.style.transform = `translate(-50%, -50%) translate(${x}px,${y}px)`;
             });
