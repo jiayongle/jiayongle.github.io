@@ -104,17 +104,21 @@
             scene.add(line);
         }
 
-        // Create all hosts
-        const hostNodes = hosts.map(host =>
-            createNode(host.x, host.y, host.z, "host", 0xff0000)
-        ); // Red color for hosts
+        // Create all hosts and store the node in the host object
+        const hostNodes = hosts.map(host => {
+            const node = createNode(host.x, host.y, host.z, "host", 0xff0000); // Red color for hosts
+            host.node = node; // Store the node in the host object
+            return node;
+        });
 
-        // Create all cores (devices)
-        const coreNodes = cores.map(core =>
-            createNode(core.x, core.y, core.z, "device", 0x00ff00)
-        ); // Green color for cores
+        // Create all cores (devices) and store the node in the core object
+        const coreNodes = cores.map(core => {
+            const node = createNode(core.x, core.y, core.z, "device", 0x00ff00); // Green color for cores
+            core.node = node; // Store the node in the core object
+            return node;
+        });
 
-        // Create edges (connections between chips)
+        // Create edges (connections between cores)
         for (let i = 0; i < cores.length; i++) {
             for (let j = i + 1; j < cores.length; j++) {
                 if (
@@ -133,6 +137,27 @@
                 }
             }
         }
+
+        // Create edges between each core and its host
+        cores.forEach(core => {
+            // Find the host with matching hostX, hostY, hostZ
+            const host = hosts.find(
+                h =>
+                    h.hostX === core.hostX &&
+                    h.hostY === core.hostY &&
+                    h.hostZ === core.hostZ
+            );
+            if (host) {
+                createEdge(
+                    core.x,
+                    core.y,
+                    core.z,
+                    host.x,
+                    host.y,
+                    host.z
+                );
+            }
+        });
 
         // Update labels' positions
         function updateLabels() {
@@ -168,3 +193,4 @@
     </script>
 </body>
 </html>
+
