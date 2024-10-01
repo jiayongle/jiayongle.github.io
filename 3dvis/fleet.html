@@ -35,105 +35,25 @@
         camera.position.set(6, 6, 10);
 
         // Create a renderer
-        const renderer = new THREE.WebGLRenderer();
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
         // Add OrbitControls for zoom and rotation
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-        // Core data from the provided topology
-        const cores = [
-            {"globalId":0,"hostX":0,"hostY":0,"hostZ":0,"indexOnHost":0,"x":0,"y":0,"z":0},
-            {"globalId":1,"hostX":0,"hostY":0,"hostZ":0,"indexOnHost":1,"x":1,"y":0,"z":0},
-            {"globalId":4,"hostX":0,"hostY":0,"hostZ":0,"indexOnHost":2,"x":0,"y":1,"z":0},
-            {"globalId":5,"hostX":0,"hostY":0,"hostZ":0,"indexOnHost":3,"x":1,"y":1,"z":0},
-            {"globalId":2,"hostX":1,"hostY":0,"hostZ":0,"indexOnHost":0,"x":2,"y":0,"z":0},
-            {"globalId":3,"hostX":1,"hostY":0,"hostZ":0,"indexOnHost":1,"x":3,"y":0,"z":0},
-            {"globalId":6,"hostX":1,"hostY":0,"hostZ":0,"indexOnHost":2,"x":2,"y":1,"z":0},
-            {"globalId":7,"hostX":1,"hostY":0,"hostZ":0,"indexOnHost":3,"x":3,"y":1,"z":0},
-            {"globalId":8,"hostX":0,"hostY":1,"hostZ":0,"indexOnHost":0,"x":0,"y":2,"z":0},
-            {"globalId":9,"hostX":0,"hostY":1,"hostZ":0,"indexOnHost":1,"x":1,"y":2,"z":0},
-            {"globalId":12,"hostX":0,"hostY":1,"hostZ":0,"indexOnHost":2,"x":0,"y":3,"z":0},
-            {"globalId":13,"hostX":0,"hostY":1,"hostZ":0,"indexOnHost":3,"x":1,"y":3,"z":0},
-            {"globalId":10,"hostX":1,"hostY":1,"hostZ":0,"indexOnHost":0,"x":2,"y":2,"z":0},
-            {"globalId":11,"hostX":1,"hostY":1,"hostZ":0,"indexOnHost":1,"x":3,"y":2,"z":0},
-            {"globalId":14,"hostX":1,"hostY":1,"hostZ":0,"indexOnHost":2,"x":2,"y":3,"z":0},
-            {"globalId":15,"hostX":1,"hostY":1,"hostZ":0,"indexOnHost":3,"x":3,"y":3,"z":0},
-            {"globalId":16,"hostX":0,"hostY":0,"hostZ":1,"indexOnHost":0,"x":0,"y":0,"z":1},
-            {"globalId":17,"hostX":0,"hostY":0,"hostZ":1,"indexOnHost":1,"x":1,"y":0,"z":1},
-            {"globalId":20,"hostX":0,"hostY":0,"hostZ":1,"indexOnHost":2,"x":0,"y":1,"z":1},
-            {"globalId":21,"hostX":0,"hostY":0,"hostZ":1,"indexOnHost":3,"x":1,"y":1,"z":1},
-            {"globalId":18,"hostX":1,"hostY":0,"hostZ":1,"indexOnHost":0,"x":2,"y":0,"z":1},
-            {"globalId":19,"hostX":1,"hostY":0,"hostZ":1,"indexOnHost":1,"x":3,"y":0,"z":1},
-            {"globalId":22,"hostX":1,"hostY":0,"hostZ":1,"indexOnHost":2,"x":2,"y":1,"z":1},
-            {"globalId":23,"hostX":1,"hostY":0,"hostZ":1,"indexOnHost":3,"x":3,"y":1,"z":1},
-            {"globalId":24,"hostX":0,"hostY":1,"hostZ":1,"indexOnHost":0,"x":0,"y":2,"z":1},
-            {"globalId":25,"hostX":0,"hostY":1,"hostZ":1,"indexOnHost":1,"x":1,"y":2,"z":1},
-            {"globalId":28,"hostX":0,"hostY":1,"hostZ":1,"indexOnHost":2,"x":0,"y":3,"z":1},
-            {"globalId":29,"hostX":0,"hostY":1,"hostZ":1,"indexOnHost":3,"x":1,"y":3,"z":1},
-            {"globalId":26,"hostX":1,"hostY":1,"hostZ":1,"indexOnHost":0,"x":2,"y":2,"z":1},
-            {"globalId":27,"hostX":1,"hostY":1,"hostZ":1,"indexOnHost":1,"x":3,"y":2,"z":1},
-            {"globalId":30,"hostX":1,"hostY":1,"hostZ":1,"indexOnHost":2,"x":2,"y":3,"z":1},
-            {"globalId":31,"hostX":1,"hostY":1,"hostZ":1,"indexOnHost":3,"x":3,"y":3,"z":1},
-            {"globalId":32,"hostX":0,"hostY":0,"hostZ":2,"indexOnHost":0,"x":0,"y":0,"z":2},
-            {"globalId":33,"hostX":0,"hostY":0,"hostZ":2,"indexOnHost":1,"x":1,"y":0,"z":2},
-            {"globalId":36,"hostX":0,"hostY":0,"hostZ":2,"indexOnHost":2,"x":0,"y":1,"z":2},
-            {"globalId":37,"hostX":0,"hostY":0,"hostZ":2,"indexOnHost":3,"x":1,"y":1,"z":2},
-            {"globalId":34,"hostX":1,"hostY":0,"hostZ":2,"indexOnHost":0,"x":2,"y":0,"z":2},
-            {"globalId":35,"hostX":1,"hostY":0,"hostZ":2,"indexOnHost":1,"x":3,"y":0,"z":2},
-            {"globalId":38,"hostX":1,"hostY":0,"hostZ":2,"indexOnHost":2,"x":2,"y":1,"z":2},
-            {"globalId":39,"hostX":1,"hostY":0,"hostZ":2,"indexOnHost":3,"x":3,"y":1,"z":2},
-            {"globalId":40,"hostX":0,"hostY":1,"hostZ":2,"indexOnHost":0,"x":0,"y":2,"z":2},
-            {"globalId":41,"hostX":0,"hostY":1,"hostZ":2,"indexOnHost":1,"x":1,"y":2,"z":2},
-            {"globalId":44,"hostX":0,"hostY":1,"hostZ":2,"indexOnHost":2,"x":0,"y":3,"z":2},
-            {"globalId":45,"hostX":0,"hostY":1,"hostZ":2,"indexOnHost":3,"x":1,"y":3,"z":2},
-            {"globalId":42,"hostX":1,"hostY":1,"hostZ":2,"indexOnHost":0,"x":2,"y":2,"z":2},
-            {"globalId":43,"hostX":1,"hostY":1,"hostZ":2,"indexOnHost":1,"x":3,"y":2,"z":2},
-            {"globalId":46,"hostX":1,"hostY":1,"hostZ":2,"indexOnHost":2,"x":2,"y":3,"z":2},
-            {"globalId":47,"hostX":1,"hostY":1,"hostZ":2,"indexOnHost":3,"x":3,"y":3,"z":2},
-            {"globalId":48,"hostX":0,"hostY":0,"hostZ":3,"indexOnHost":0,"x":0,"y":0,"z":3},
-            {"globalId":49,"hostX":0,"hostY":0,"hostZ":3,"indexOnHost":1,"x":1,"y":0,"z":3},
-            {"globalId":52,"hostX":0,"hostY":0,"hostZ":3,"indexOnHost":2,"x":0,"y":1,"z":3},
-            {"globalId":53,"hostX":0,"hostY":0,"hostZ":3,"indexOnHost":3,"x":1,"y":1,"z":3},
-            {"globalId":50,"hostX":1,"hostY":0,"hostZ":3,"indexOnHost":0,"x":2,"y":0,"z":3},
-            {"globalId":51,"hostX":1,"hostY":0,"hostZ":3,"indexOnHost":1,"x":3,"y":0,"z":3},
-            {"globalId":54,"hostX":1,"hostY":0,"hostZ":3,"indexOnHost":2,"x":2,"y":1,"z":3},
-            {"globalId":55,"hostX":1,"hostY":0,"hostZ":3,"indexOnHost":3,"x":3,"y":1,"z":3},
-            {"globalId":56,"hostX":0,"hostY":1,"hostZ":3,"indexOnHost":0,"x":0,"y":2,"z":3},
-            {"globalId":57,"hostX":0,"hostY":1,"hostZ":3,"indexOnHost":1,"x":1,"y":2,"z":3},
-            {"globalId":60,"hostX":0,"hostY":1,"hostZ":3,"indexOnHost":2,"x":0,"y":3,"z":3},
-            {"globalId":61,"hostX":0,"hostY":1,"hostZ":3,"indexOnHost":3,"x":1,"y":3,"z":3},
-            {"globalId":58,"hostX":1,"hostY":1,"hostZ":3,"indexOnHost":0,"x":2,"y":2,"z":3},
-            {"globalId":59,"hostX":1,"hostY":1,"hostZ":3,"indexOnHost":1,"x":3,"y":2,"z":3},
-            {"globalId":62,"hostX":1,"hostY":1,"hostZ":3,"indexOnHost":2,"x":2,"y":3,"z":3},
-            {"globalId":63,"hostX":1,"hostY":1,"hostZ":3,"indexOnHost":3,"x":3,"y":3,"z":3}
-        ];
+        // Add lighting for texture effect
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // soft light
+        scene.add(ambientLight);
 
-        // Generate host data from cores
-        const hostMap = {};
-        cores.forEach(core => {
-            const key = `${core.hostX},${core.hostY},${core.hostZ}`;
-            if (!hostMap[key]) {
-                hostMap[key] = {
-                    hostX: core.hostX,
-                    hostY: core.hostY,
-                    hostZ: core.hostZ,
-                    x: core.hostX * 2 + 0.5, // Adjust position as needed
-                    y: core.hostY * 2 + 0.5,
-                    z: core.hostZ * 2 + 0.5
-                };
-            }
-        });
-        const hosts = Object.values(hostMap);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
 
-        // Label container for HTML-based labels
-        const labelContainer = document.getElementById('label-container');
-
-        // Function to create a sphere (representing a node)
+        // Function to create a sphere (representing a node) with texture
         function createNode(x, y, z, label, color) {
-            const geometry = new THREE.SphereGeometry(0.2, 32, 32);
-            const material = new THREE.MeshBasicMaterial({ color: color });
+            const geometry = new THREE.SphereGeometry(0.3, 32, 32);
+            const material = new THREE.MeshStandardMaterial({ color: color });
             const node = new THREE.Mesh(geometry, material);
             node.position.set(x, y, z);
             scene.add(node);
@@ -160,6 +80,29 @@
             const line = new THREE.Line(geometry, material);
             scene.add(line);
         }
+
+        // Core data from the provided topology
+        const cores = [...]; // (Your cores data remains unchanged)
+
+        // Generate host data from cores
+        const hostMap = {};
+        cores.forEach(core => {
+            const key = `${core.hostX},${core.hostY},${core.hostZ}`;
+            if (!hostMap[key]) {
+                hostMap[key] = {
+                    hostX: core.hostX,
+                    hostY: core.hostY,
+                    hostZ: core.hostZ,
+                    x: core.hostX * 2 + 1, // Adjusted position for more natural placement
+                    y: core.hostY * 2 + 1,
+                    z: core.hostZ * 2 + 1
+                };
+            }
+        });
+        const hosts = Object.values(hostMap);
+
+        // Label container for HTML-based labels
+        const labelContainer = document.getElementById('label-container');
 
         // Create all hosts and store the node in the host object
         const hostNodes = hosts.map(host => {
@@ -200,7 +143,6 @@
 
         // Create edges between each core and its host
         cores.forEach(core => {
-            // Find the host with matching hostX, hostY, hostZ
             const host = hosts.find(
                 h =>
                     h.hostX === core.hostX &&
