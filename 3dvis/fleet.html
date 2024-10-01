@@ -17,11 +17,10 @@
 </head>
 <body>
     <div id="label-container"></div>
-    <script type="module">
-        // Import Three.js and OrbitControls as modules from unpkg.com
-        import * as THREE from 'https://unpkg.com/three@0.128.0/build/three.module.js';
-        import { OrbitControls } from 'https://unpkg.com/three@0.128.0/examples/jsm/controls/OrbitControls.js';
-
+    <!-- Include Three.js and OrbitControls.js via script tags -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
         // Create the scene
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xdddddd);
@@ -41,7 +40,7 @@
         document.body.appendChild(renderer.domElement);
 
         // Add OrbitControls for zoom and rotation
-        const controls = new OrbitControls(camera, renderer.domElement);
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
         // Create core data
         const cores = [
