@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D Chip Topology with Zoom and Rotation</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <!-- Include Three.js, OrbitControls.js, and CSS2DRenderer.js via script tags -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
+    <script>
+        // Create the scene
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xdddddd);
+
+        // Create a camera
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+        camera.position.set(6, 6, 12);
+
+        // Create renderers
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const labelRenderer = new THREE.CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(labelRenderer.domElement);
+
+        // Add OrbitControls for zoom and rotation
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        // Add lighting to the scene
+        const ambientLight = new THREE.AmbientLight(0x404040, 1.5); // Soft white light
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 10, 7.5);
+        scene.add(directionalLight);
+
+        // Core data from the provided topology
+        const cores = [/* ... your core data ... */];
+
+        // Generate host data from cores
+        const hostMap = {};
+        cores.forEach(core => {
+            const key = `${core.hostX},${core.hostY},${core.hostZ}`;
+            if (!hostMap[key]) {
+                hostMap[key] = {
+                    hostX: core.hostX,
+                    hostY: core.hostY,
+                    hostZ: core.hostZ,
+                    key: key, // Store the hostMap key
+                    cores: []
+                };
+            }
+            hostMap[key].cores.push(core);
+        });
+        const hosts = Object.values(hostMap);
+
+        // Calculate host positions as the centroid of their cores
+        hosts.forEach(host => {
+            let sumX = 0, sumY = 0, sumZ = 0;
+            host.cores.forEach(core => {
+                sumX += core.x;
+                sumY += core.y;
+                sumZ += core.z;
+            });
+            const numCores = host.cores.length;
+            host.x = sumX / numCores;
+            host.y = sumY / numCores;
+            host.z = sumZ / numCores;
+        });
+
+        // Function to create a sphere (representing a node)
+        function createNode(x, y, z, label, color) {
+            const geometry = new THREE.SphereGeometry(0.2, 32, 32);
+            const material = new THREE.MeshPhongMaterial({ color: color });
+            const node = new THREE.Mesh(geometry, material);
+            node.position.set(x, y, z);
+            scene.add(node);
+
+            // Create a label element
+            const div = document.createElement('div');
+            div.className = 'label';
+            div.textContent = label;
+            div.style.marginTop = '-1em';
+            div.style.color = 'black';
+            div.style.fontSize = '12px';
+
+            const labelObj = new THREE.CSS2DObject(div);
+            labelObj.position.set(0, 0.3, 0);
+            node.add(labelObj);
+
+            return node;
+        }
+
+        // Function to create an edge between two nodes
+        function createEdge(x1, y1, z1, x2, y2, z2, color = 0x0000ff) {
+            const material = new THREE.LineBasicMaterial({ color: color });
+            const points = [];
+            points.push(new THREE.Vector3(x1, y1, z1));
+            points.push(new THREE.Vector3(x2, y2, z2));
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const line = new THREE.Line(geometry, material);
+            scene.add(line);
+        }
+
+        // Create all hosts and store the node in the host object
+        const hostNodes = hosts.map(host => {
+            const label = "h(" + host.key + ")";
+            const node = createNode(host.x, host.y, host.z, label, 0xff0000); // Red color for hosts
+            host.node = node; // Store the node in the host object
+            return node;
+        });
+
+        // Create all cores (devices) and store the node in the core object
+        const coreNodes = cores.map(core => {
+            const label = "d" + core.globalId;
+            const node = createNode(core.x, core.y, core.z, label, 0x00ff00); // Green color for cores
+            core.node = node; // Store the node in the core object
+            return node;
+        });
+
+        // Create edges (connections between cores)
+        for (let i = 0; i < cores.length; i++) {
+            for (let j = i + 1; j < cores.length; j++) {
+                if (
+                    Math.abs(cores[i].x - cores[j].x) <= 1 &&
+                    Math.abs(cores[i].y - cores[j].y) <= 1 &&
+                    Math.abs(cores[i].z - cores[j].z) <= 1 &&
+                    (Math.abs(cores[i].x - cores[j].x) +
+                     Math.abs(cores[i].y - cores[j].y) +
+                     Math.abs(cores[i].z - cores[j].z) === 1) // Direct neighbors
+                ) {
+                    createEdge(
+                        cores[i].x,
+                        cores[i].y,
+                        cores[i].z,
+                        cores[j].x,
+                        cores[j].y,
+                        cores[j].z
+                    );
+                }
+            }
+        }
+
+        // Create edges between each core and its host
+        cores.forEach(core => {
+            // Find the host with matching hostX, hostY, hostZ
+            const host = hosts.find(
+                h =>
+                    h.hostX === core.hostX &&
+                    h.hostY === core.hostY &&
+                    h.hostZ === core.hostZ
+            );
+            if (host) {
+                createEdge(
+                    core.x,
+                    core.y,
+                    core.z,
+                    host.x,
+                    host.y,
+                    host.z,
+                    0xff00ff // Magenta color for host-device connections
+                );
+            }
+        });
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update(); // Enable zoom and rotation controls
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
