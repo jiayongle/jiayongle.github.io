@@ -2,17 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>3D Chip Topology with Zoom and Rotation</title>
+    <title>3D Chip Topology with Cubes and Labels</title>
     <style>
         body { margin: 0; }
         canvas { display: block; }
     </style>
 </head>
 <body>
-    <!-- Include Three.js, OrbitControls.js, and CSS2DRenderer.js via script tags -->
+    <!-- Include Three.js and OrbitControls.js via script tags -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
     <script>
         // Create the scene
         const scene = new THREE.Scene();
@@ -27,17 +26,10 @@
         );
         camera.position.set(6, 6, 12);
 
-        // Create renderers
+        // Create renderer
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
-
-        const labelRenderer = new THREE.CSS2DRenderer();
-        labelRenderer.setSize(window.innerWidth, window.innerHeight);
-        labelRenderer.domElement.style.position = 'absolute';
-        labelRenderer.domElement.style.top = '0';
-        labelRenderer.domElement.style.pointerEvents = 'none';
-        document.body.appendChild(labelRenderer.domElement);
 
         // Add OrbitControls for zoom and rotation
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -149,25 +141,40 @@
             host.z = sumZ / numCores;
         });
 
-        // Function to create a sphere (representing a node)
+        // Function to create a cube with label on one face
         function createNode(x, y, z, label, color) {
-            const geometry = new THREE.SphereGeometry(0.2, 32, 32);
-            const material = new THREE.MeshPhongMaterial({ color: color });
-            const node = new THREE.Mesh(geometry, material);
+            const size = 0.4; // Size of the cube
+            const geometry = new THREE.BoxGeometry(size, size, size);
+
+            // Create a canvas to draw the label
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const context = canvas.getContext('2d');
+            context.fillStyle = 'white';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.font = 'Bold 80px Arial';
+            context.fillStyle = 'black';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(label, canvas.width / 2, canvas.height / 2);
+
+            // Create a texture from the canvas
+            const texture = new THREE.CanvasTexture(canvas);
+
+            // Create materials for each face
+            const materials = [
+                new THREE.MeshPhongMaterial({ color: color }), // Right
+                new THREE.MeshPhongMaterial({ color: color }), // Left
+                new THREE.MeshPhongMaterial({ color: color }), // Top
+                new THREE.MeshPhongMaterial({ color: color }), // Bottom
+                new THREE.MeshPhongMaterial({ map: texture }), // Front (label)
+                new THREE.MeshPhongMaterial({ color: color })  // Back
+            ];
+
+            const node = new THREE.Mesh(geometry, materials);
             node.position.set(x, y, z);
             scene.add(node);
-
-            // Create a label element
-            const div = document.createElement('div');
-            div.className = 'label';
-            div.textContent = label;
-            div.style.marginTop = '-1em';
-            div.style.color = 'black';
-            div.style.fontSize = '12px';
-
-            const labelObj = new THREE.CSS2DObject(div);
-            labelObj.position.set(0, 0.3, 0);
-            node.add(labelObj);
 
             return node;
         }
@@ -249,7 +256,6 @@
             requestAnimationFrame(animate);
             controls.update(); // Enable zoom and rotation controls
             renderer.render(scene, camera);
-            labelRenderer.render(scene, camera);
         }
         animate();
 
@@ -258,7 +264,6 @@
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            labelRenderer.setSize(window.innerWidth, window.innerHeight);
         });
     </script>
 </body>
